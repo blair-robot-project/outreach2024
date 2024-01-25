@@ -12,9 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.InstantCommand
-import frc.team449.control.holonomic.SwerveSim
 import frc.team449.robot2024.Robot
-import frc.team449.robot2024.auto.routines.RoutineChooser
 import frc.team449.robot2024.commands.light.BlairChasing
 import frc.team449.robot2024.commands.light.BreatheHue
 import frc.team449.robot2024.commands.light.Rainbow
@@ -32,14 +30,12 @@ class RobotLoop : TimedRobot(), Logged {
   @Log.NT
   private val robot = Robot()
 
-  private val routineChooser: RoutineChooser = RoutineChooser(robot)
-
   @Log.NT
   private val field = robot.field
 
   private var autoCommand: Command? = null
   private var routineMap = hashMapOf<String, Command>()
-  private val controllerBinder = ControllerBindings(robot.driveController, robot.mechController, robot)
+  private val controllerBinder = ControllerBindings(robot.driveController, robot)
 
   override fun robotInit() {
     // Yes this should be a print statement, it's useful to know that robotInit started.
@@ -56,10 +52,8 @@ class RobotLoop : TimedRobot(), Logged {
     }
 
     println("Generating Auto Routines : ${Timer.getFPGATimestamp()}")
-    routineMap = routineChooser.routineMap()
     println("DONE Generating Auto Routines : ${Timer.getFPGATimestamp()}")
 
-    SmartDashboard.putData("Routine Chooser", routineChooser)
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance())
 
     robot.light.defaultCommand = BlairChasing(robot.light)
@@ -88,7 +82,6 @@ class RobotLoop : TimedRobot(), Logged {
     VisionConstants.ENCODER_TRUST.setColumn(0, MatBuilder.fill(Nat.N3(), Nat.N1(), .0125, .0125, .010))
 
     /** Every time auto starts, we update the chosen auto command */
-    this.autoCommand = routineMap[routineChooser.selected]
     CommandScheduler.getInstance().schedule(this.autoCommand)
 
     if (DriverStation.getAlliance().getOrNull() == DriverStation.Alliance.Red) {
@@ -123,7 +116,6 @@ class RobotLoop : TimedRobot(), Logged {
   }
 
   override fun disabledPeriodic() {
-    routineChooser.updateOptions(DriverStation.getAlliance().getOrNull() == DriverStation.Alliance.Red)
   }
 
   override fun testInit() {
@@ -137,12 +129,5 @@ class RobotLoop : TimedRobot(), Logged {
   override fun simulationInit() {}
 
   override fun simulationPeriodic() {
-    robot.drive as SwerveSim
-
-    VisionConstants.ESTIMATORS.forEach {
-      it.simulationPeriodic(robot.drive.odoPose)
-    }
-
-    VisionConstants.VISION_SIM.debugField.getObject("EstimatedRobot").pose = robot.drive.pose
   }
 }

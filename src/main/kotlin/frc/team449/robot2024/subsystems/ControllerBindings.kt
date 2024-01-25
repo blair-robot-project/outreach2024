@@ -1,24 +1,16 @@
 package frc.team449.robot2024.subsystems
 
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.XboxController
-import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
-import edu.wpi.first.wpilibj2.command.button.Trigger
-import frc.team449.control.holonomic.SwerveSim
 import frc.team449.robot2024.Robot
-import frc.team449.robot2024.constants.RobotConstants
-import kotlin.math.PI
 
 class ControllerBindings(
-  private val driveController: XboxController,
-  private val mechanismController: XboxController,
+  private val controller: XboxController,
   private val robot: Robot
 ) {
 
-  private fun robotBindings() {
+  /*private fun robotBindings() {
     JoystickButton(driveController, XboxController.Button.kRightBumper.value).onTrue(
       robot.undertaker.intake()
     ).onFalse(
@@ -61,10 +53,23 @@ class ControllerBindings(
         InstantCommand()
       ) { RobotBase.isSimulation() }
     )
-  }
+  }*/
 
   fun bindButtons() {
-    evergreenBindings()
-    robotBindings()
+    JoystickButton(controller, XboxController.Button.kA.value).onTrue(
+      robot.intake.runIntakeForward().andThen(
+        robot.shooter.runShooter()
+      )
+    ).onFalse(
+      robot.intake.stopIntake().andThen(
+        robot.shooter.stopShooter()
+      )
+    )
+
+    JoystickButton(controller, XboxController.Button.kX.value).onTrue(
+      InstantCommand(robot.intake::runIntakeForward)
+    ).onFalse(
+      InstantCommand(robot.intake::stopIntake)
+    )
   }
 }

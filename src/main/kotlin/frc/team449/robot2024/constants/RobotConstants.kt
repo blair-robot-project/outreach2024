@@ -10,6 +10,8 @@ import kotlin.math.PI
 
 object RobotConstants {
 
+  const val RATE_LIMIT = 3.5
+
   /** Other CAN ID */
   const val PDH_CAN = 1
 
