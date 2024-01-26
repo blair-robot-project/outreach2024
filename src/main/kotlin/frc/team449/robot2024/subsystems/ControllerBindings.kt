@@ -1,9 +1,13 @@
 package frc.team449.robot2024.subsystems
 
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
+import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.team449.robot2024.Robot
+import frc.team449.robot2024.constants.RobotConstants
+import kotlin.math.PI
 
 class ControllerBindings(
   private val controller: XboxController,
@@ -22,13 +26,13 @@ class ControllerBindings(
     ).onFalse(
       robot.undertaker.stop()
     )
-  }
+  }*/
 
   private fun evergreenBindings() {
     // slow drive
-    Trigger { driveController.rightTriggerAxis >= .75 }.onTrue(
-      InstantCommand({ robot.drive.maxLinearSpeed = 1.0 }).andThen(
-        InstantCommand({ robot.drive.maxRotSpeed = PI / 4 })
+    Trigger { controller.rightTriggerAxis >= .75 }.onTrue(
+      InstantCommand({ robot.drive.maxLinearSpeed = 5.66 }).andThen(
+        InstantCommand({ robot.drive.maxRotSpeed = PI })
       )
     ).onFalse(
       InstantCommand({ robot.drive.maxLinearSpeed = RobotConstants.MAX_LINEAR_SPEED }).andThen(
@@ -37,25 +41,16 @@ class ControllerBindings(
     )
 
     // reset gyro
-    JoystickButton(driveController, XboxController.Button.kStart.value).onTrue(
+    JoystickButton(controller, XboxController.Button.kStart.value).onTrue(
       InstantCommand({
         robot.drive.heading = Rotation2d()
       })
     )
-
-    // introduce "noise" to the simulated pose
-    JoystickButton(driveController, XboxController.Button.kB.value).onTrue(
-      ConditionalCommand(
-        InstantCommand({
-          robot.drive as SwerveSim
-          robot.drive.resetPos()
-        }),
-        InstantCommand()
-      ) { RobotBase.isSimulation() }
-    )
-  }*/
+  }
 
   fun bindButtons() {
+    evergreenBindings()
+
     JoystickButton(controller, XboxController.Button.kA.value).onTrue(
       robot.intake.runIntakeForward().andThen(
         robot.shooter.runShooter()

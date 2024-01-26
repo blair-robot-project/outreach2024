@@ -3,9 +3,7 @@ package frc.team449.robot2024.constants
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.util.Units
-import frc.team449.robot2024.constants.drives.SwerveConstants
 import kotlin.math.PI
 
 object RobotConstants {
@@ -25,17 +23,9 @@ object RobotConstants {
   const val ROBOT_WEIGHT = 55.0
 
   /** Drive configuration */
-  const val MAX_LINEAR_SPEED = SwerveConstants.MAX_ATTAINABLE_MK4I_SPEED // m/s
-  const val MAX_ROT_SPEED = PI // rad/s
-  val MAX_ACCEL = 4 * DCMotor(
-    MotorConstants.NOMINAL_VOLTAGE,
-    MotorConstants.STALL_TORQUE * SwerveConstants.EFFICIENCY,
-    MotorConstants.STALL_CURRENT,
-    MotorConstants.FREE_CURRENT,
-    MotorConstants.FREE_SPEED,
-    1
-  ).getTorque(55.0) /
-    ((SwerveConstants.DRIVE_UPR / (2 * PI)) * ROBOT_WEIGHT * SwerveConstants.DRIVE_GEARING) // m/s/s
+  const val MAX_LINEAR_SPEED = 1.5
+  const val MAX_ROT_SPEED = PI / 2 // rad/s
+  val MAX_ACCEL = 15.0
 
   val INITIAL_POSE = Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0))
 
